@@ -975,7 +975,7 @@ usermod -L "$USER" >/dev/null 2>&1
 
 php_ver_chon=${php_version//[-._]/}
 
-extensions=(gd imagick process mbstring mysqlnd xml opcache mcrypt pdo imap bcmath intl zip mysql json curl common pecl-igbinary igbinary)
+extensions=(gd imagick process mbstring mysqlnd xml opcache mcrypt pdo imap bcmath intl zip mysql json curl common pecl-igbinary igbinary sodium soap)
 
 dnf install lsphp"${php_ver_chon}" -y
 for extension in "${extensions[@]}"; do

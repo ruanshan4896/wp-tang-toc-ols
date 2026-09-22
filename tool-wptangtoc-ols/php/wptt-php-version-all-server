@@ -116,7 +116,7 @@ php_ver_chon=$(echo "$php_version_name" | grep -Eo '[0-9]{1,2}' | head -1)
 # ==============================================================================
 # CÀI ĐẶT LITE-SPEED PHP VÀ EXTENSIONS (CÓ BÁO CÁO TIẾN TRÌNH CHI TIẾT)
 # ==============================================================================
-extensions=(common gd imagick process mbstring pdo mysqlnd xml opcache mcrypt imap bcmath intl zip mysql json curl pecl-igbinary igbinary)
+extensions=(common gd imagick process mbstring pdo mysqlnd xml opcache mcrypt imap bcmath intl zip mysql json curl pecl-igbinary igbinary sodium soap)
 
 if [[ $(dnf list available 2>/dev/null | grep "lsphp${php_ver_chon}") || $(apt list 2>/dev/null | grep "lsphp${php_ver_chon}") ]]; then
 
