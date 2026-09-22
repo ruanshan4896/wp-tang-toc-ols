@@ -128,7 +128,7 @@ if [[ $(dnf list available 2>/dev/null | grep "lsphp${php_ver_chon}") || $(apt l
   # Cài đặt từng Extension
   for extension in "${extensions[@]}"; do
     _runing "Đang cài đặt extension: lsphp${php_ver_chon}-$extension..."
-    yum install -y lsphp"${php_ver_chon}"-"$extension" >/dev/null 2>&1
+    yum install -y lsphp"${php_ver_chon}"-"$extension" lsphp"${php_ver_chon}"-pecl-"$extension" >/dev/null 2>&1
     _rundone "Cài đặt extension: lsphp${php_ver_chon}-$extension"
   done
 

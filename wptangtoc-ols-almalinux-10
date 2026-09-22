@@ -982,8 +982,8 @@ php_ver_chon=${php_version//[-._]/}
 extensions=(gd imagick process mbstring mysqlnd xml opcache mcrypt pdo imap bcmath intl zip mysql json curl common pecl-igbinary igbinary)
 
 dnf install lsphp"${php_ver_chon}" -y
-for extension in ${extensions[@]}; do
-  yum install -y lsphp"${php_ver_chon}"-"$extension"
+for extension in "${extensions[@]}"; do
+  yum install -y lsphp"${php_ver_chon}"-"$extension" lsphp"${php_ver_chon}"-pecl-"$extension" >/dev/null 2>&1
 done
 
 if [[ $su_dung_repo_du_phong = '1' ]]; then
