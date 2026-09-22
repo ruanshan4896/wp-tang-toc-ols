@@ -121,7 +121,7 @@ if [[ -z "$telegram_api" || -z "$telegram_id" ]]; then
       # =========================================================
       _runing "Đang gửi thử tin nhắn cảnh báo tới Chat ID: $new_telegram_id..."
       ip=$(curl -sf --connect-timeout 5 --max-time 10 https://ipv4.icanhazip.com || curl -sf --connect-timeout 5 --max-time 10 https://checkip.amazonaws.com)
-      text="*KẾT NỐI BOT THÀNH CÔNG*%0A%0ACảm ơn bạn đã sử dụng WPTangToc OLS.%0APhiên bản OLS: \`$version_wptangtoc_ols\`%0AIP Máy chủ: \`$ip\`%0APhát triển bởi: [Gia Tuấn](https://wptangtoc.com)"
+      text="*KẾT NỐI BOT THÀNH CÔNG*%0A%0ACảm ơn bạn đã sử dụng WPTangToc OLS.%0APhiên bản OLS: \`$version_wptangtoc_ols\`%0AIP Máy chủ: \`$ip\`"
 
       url_tele="https://api.telegram.org/bot${new_telegram_api}/sendMessage"
       http_telegram=$(curl -s -d "chat_id=$new_telegram_id&text=${text}&disable_web_page_preview=true&parse_mode=markdown" "$url_tele")
