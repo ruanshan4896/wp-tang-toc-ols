@@ -90,19 +90,16 @@ options=(
   "$bao_mat"                      #21
   "$update_wptangtoc_ols"         #22
   "$quan_ly_phpmyadmin"           #23
-  "$gui_yeu_cau_gia_tuan"         #24
-  "$quan_ly_swap"                 #25
-  "$chuyen_website"               #26
-  "$quan_ly_file_manager"         #27
-  "$quan_ly_tai_nguyen"           #28
-  "$gia_lap_website"              #29
-  "$tai_tro_du_an"                #30
-  "$nhom_facebook_thao_luan"      #31
-  "$quan_ly_ngon_ngu"             #32
-  "Tài liệu hướng dẫn"            #33
-  "Add ons" #34
-  "Thùng Rác" #34
-  "Mở Terminal / Dòng lệnh CLI"   #35
+  "$quan_ly_swap"                 #24
+  "$chuyen_website"               #25
+  "$quan_ly_file_manager"         #26
+  "$quan_ly_tai_nguyen"           #27
+  "$gia_lap_website"              #28
+  "$quan_ly_ngon_ngu"             #29
+  "Tài liệu hướng dẫn"            #30
+  "Add ons"                       #31
+  "Thùng Rác"                     #32
+  "Mở Terminal / Dòng lệnh CLI"   #33
 )
 
 # ==============================================================================
@@ -156,37 +153,25 @@ run_action() {
     script_args="97"
     ;;
   23) script_path="/etc/wptt/wptt-phpmyadmin-main" ;;
-  24)
-    script_path="/etc/wptt/wptt-feedback"
-    script_args="98"
-    ;;
-  25) script_path="/etc/wptt/wptt-swap-main" ;;
-  26) script_path="/etc/wptt/wptt-chuyen-web-main" ;;
-  27) script_path="/etc/wptt/wptt-quan-ly-files-main" ;;
-  28) script_path="/etc/wptt/wptt-tai-nguyen-main" ;;
-  29) script_path="/etc/wptt/wptt-gia-lap-main" ;;
-  30)
-    script_path="/etc/wptt/wptt-donate"
-    script_args="98"
-    ;;
-  31)
-    script_path="/etc/wptt/wptt-nhom-fb"
-    script_args="98"
-    ;;
-  32)
+  24) script_path="/etc/wptt/wptt-swap-main" ;;
+  25) script_path="/etc/wptt/wptt-chuyen-web-main" ;;
+  26) script_path="/etc/wptt/wptt-quan-ly-files-main" ;;
+  27) script_path="/etc/wptt/wptt-tai-nguyen-main" ;;
+  28) script_path="/etc/wptt/wptt-gia-lap-main" ;;
+  29)
     script_path="/etc/wptt/lang-main"
     script_args="98"
     ;;
-  33)
+  30)
     script_path="/etc/wptt/search-wptangtoc-huong-dan"
     script_args="98"
     ;;
-  34) script_path="/etc/wptt/wptt-add-one-main" ;;
-  35)
+  31) script_path="/etc/wptt/wptt-add-one-main" ;;
+  32)
     script_path="/etc/wptt/wptt-thung-rac-main"
     script_args="98"
-		;;
-  36)
+    ;;
+  33)
     script_path="/etc/wptt/terminal-cli"
     script_args="98"
     ;;
