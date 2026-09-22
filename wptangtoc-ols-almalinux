@@ -88,10 +88,10 @@ LC_ALL=en_US.utf-8
 END
 fi
 
-wptangtocols_version=$(curl --tlsv1.3 -s --connect-timeout 60 --max-time 60 https://wptangtoc.com/share/version-wptangtoc-ols.txt?domain-install="$NAME")
+wptangtocols_version=$(curl --tlsv1.2 -s --connect-timeout 60 --max-time 60 https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/version-wptangtoc-ols.txt)
 
 if [[ -z "$wptangtocols_version" ]]; then
-  wptangtocols_version=$(curl --tlsv1.2 -s --connect-timeout 60 --max-time 60 https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/version-wptangtoc-ols.txt)
+  wptangtocols_version=$(curl --tlsv1.3 -s --connect-timeout 60 --max-time 60 https://wptangtoc.com/share/version-wptangtoc-ols.txt?domain-install="$NAME")
 fi
 
 clear
@@ -1644,20 +1644,13 @@ sed -E -i "s/lsphp[0-9]+/lsphp$php_ver_chon/g" /usr/local/lsws/conf/vhosts/"$NAM
 # ------------------------------------------------------------------------------
 cd || exit
 box_out "Tải mã nguồn WPTangToc OLS (Core)..."
-wget -q --timeout=30 --tries=3 "https://wptangtoc.com/share/wptangtoc-ols.zip" -O wptangtoc-ols.zip
-wget -q --timeout=30 --tries=3 -U 'checksum wptangtoc ols' "https://hub.wptangtoc.com/wptangtoc-ols.zip.sig" -O wptangtoc-ols.zip.sig
-
-# Dự phòng Github
-if [[ ! -s wptangtoc-ols.zip || ! -s wptangtoc-ols.zip.sig ]]; then
-  wget -q --timeout=30 --tries=3 "https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/wptangtoc-ols.zip" -O wptangtoc-ols.zip
-  wget -q --timeout=30 --tries=3 "https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/wptangtoc-ols.zip.sig" -O wptangtoc-ols.zip.sig
+if [[ ! -s wptangtoc-ols.zip ]]; then
+  wget -q --timeout=30 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols.zip" -O wptangtoc-ols.zip
 fi
 
-# Xác thực GPG Core
-if ! gpg --verify wptangtoc-ols.zip.sig wptangtoc-ols.zip 2>/dev/null; then
+if [[ ! -s wptangtoc-ols.zip ]]; then
   clear
-  echo -e "${RED}CẢNH BÁO BẢO MẬT: File Core bị hỏng hoặc chữ ký GPG không hợp lệ!${NC}"
-  rm -f wptangtoc-ols.zip wptangtoc-ols.zip.sig
+  echo -e "${RED}LỖI: Không thể tải file wptangtoc-ols.zip từ repository!${NC}"
   exit 1
 fi
 
@@ -1674,20 +1667,13 @@ chmod 700 /etc/wptt/vhost
 # ------------------------------------------------------------------------------
 cd || exit
 box_out "Tải mã nguồn WPTangToc OLS (User)..."
-wget -q --timeout=30 --tries=3 "https://wptangtoc.com/share/wptangtoc-ols-user.zip" -O wptangtoc-ols-user.zip
-wget -q --timeout=30 --tries=3 -U 'checksum wptangtoc ols' "https://hub.wptangtoc.com/wptangtoc-ols-user.zip.sig" -O wptangtoc-ols-user.zip.sig
-
-# Dự phòng Github
-if [[ ! -s wptangtoc-ols-user.zip || ! -s wptangtoc-ols-user.zip.sig ]]; then
-  wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/wptangtoc-ols-user.zip" -O wptangtoc-ols-user.zip
-  wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/wptangtoc-ols-user.zip.sig" -O wptangtoc-ols-user.zip.sig
+if [[ ! -s wptangtoc-ols-user.zip ]]; then
+  wget -q --timeout=30 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols-user.zip" -O wptangtoc-ols-user.zip
 fi
 
-# Xác thực GPG User
-if ! gpg --verify wptangtoc-ols-user.zip.sig wptangtoc-ols-user.zip 2>/dev/null; then
+if [[ ! -s wptangtoc-ols-user.zip ]]; then
   clear
-  echo -e "${RED}CẢNH BÁO BẢO MẬT: File User bị hỏng hoặc chữ ký GPG không hợp lệ!${NC}"
-  rm -f wptangtoc-ols-user.zip wptangtoc-ols-user.zip.sig
+  echo -e "${RED}LỖI: Không thể tải file wptangtoc-ols-user.zip từ repository!${NC}"
   exit 1
 fi
 
@@ -2214,7 +2200,7 @@ echo -e " - Thực thi lệnh trực tiếp ngoài Terminal  : Gõ lệnh ${BOLD
 echo -e "----------------------------------------------------------------------"
 echo -e " ▪ Phát triển bởi : Gia Tuấn"
 echo -e " ▪ Liên hệ        : https://wptangtoc.com/lien-he/"
-echo -e " ▪ Changelog      : https://github.com/wptangtoc/wptangtoc-ols"
+echo -e " ▪ Changelog      : https://github.com/ruanshan4896/wp-tang-toc-ols"
 echo -e " ▪ Nhà tài trợ    : https://wptangtoc.com/donate/"
 echo -e "======================================================================"
 echo -e "Đang kiểm tra chéo độ ổn định của hệ thống..."

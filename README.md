@@ -1,13 +1,16 @@
 <div align="center">
-    <h1>WPTangToc OLS</h1>
+    <h1>WPTangToc OLS (Fork)</h1>
     <p><b>Giải pháp Thiết lập & Quản trị Webserver Miễn phí, Siêu tốc độ, Dành riêng cho WordPress</b></p>
     <p>
     <a href="https://wptangtoc.com"><img src="https://img.shields.io/badge/Optimized%20for-WordPress-21759b.svg" alt="Optimized for WordPress"></a>
-    <a href="https://github.com/wptangtoc/wptangtoc-ols/releases"><img src="https://img.shields.io/github/v/release/wptangtoc/wptangtoc-ols?label=stable&color=007ec6" alt="Stable Version"></a>
-    <a href="https://github.com/wptangtoc/wptangtoc-ols?tab=GPL-3.0-1-ov-file"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License GPLv3"></a>
+    <a href="https://github.com/ruanshan4896/wp-tang-toc-ols"><img src="https://img.shields.io/badge/Fork-ruanshan4896-orange.svg" alt="Fork Repository"></a>
+    <a href="https://github.com/ruanshan4896/wp-tang-toc-ols/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License GPLv3"></a>
     <img src="https://img.shields.io/badge/Architecture-x86__64%20%7C%20ARM-success.svg" alt="Architecture">
     </p>
 </div>
+
+> [!NOTE]
+> Đây là bản Fork tùy biến từ dự án gốc [WPTangToc OLS](https://github.com/wptangtoc/wptangtoc-ols) của tác giả Gia Tuấn, được duy trì bởi [ruanshan4896](https://github.com/ruanshan4896). Bản fork này đã được tinh chỉnh để bạn có thể tự do mở rộng tính năng và triển khai trực tiếp lên VPS của riêng mình.
 
 <hr>
 
@@ -46,19 +49,30 @@
 
 <hr>
 
-<h2>⚡ Hướng dẫn cài đặt</h2>
+<h2>⚡ Hướng dẫn cài đặt lên VPS</h2>
 
 <h3>Cách 1: Cài đặt tiêu chuẩn (Có tương tác)</h3>
-<p>Bạn chỉ cần dán đoạn mã này vào Terminal (quyền <code>root</code>), hệ thống sẽ chạy và có menu hỏi bạn một số thiết lập cơ bản:</p>
-<pre><code>curl -sO https://wptangtoc.com/share/wptangtoc-ols && bash wptangtoc-ols</code></pre>
-<p><i>Link dự phòng từ GitHub:</i></p>
-<pre>curl -sO https://wptangtoc.github.io/wptangtoc-ols/wptangtoc-ols && bash wptangtoc-ols</pre>
+<p>Dán lệnh sau vào Terminal VPS (quyền <code>root</code>) để tiến hành cài đặt kèm menu tùy chọn:</p>
+<pre><code>curl -sO https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols && bash wptangtoc-ols</code></pre>
 
 <h3>Cách 2: 🤖 Cài đặt Không Chạm (Unattended / Zero-Touch)</h3>
-<p>Tuyệt chiêu dành cho các Sysadmin muốn triển khai hạ tầng hàng loạt (Mass Deployment) qua Ansible, Cloud-Init, hãng VPS đóng thành template hay Snapshots để nhân bản rất nhanh chóng và tiện lợi hoặc đơn giản là bạn "lười" bấm phím. Chỉ cần thêm cờ <code>--auto</code>, phần mềm sẽ <b>tự động bỏ qua mọi câu hỏi</b>, áp dụng ngay cấu hình mặc định an toàn, ổn định và nhanh nhất do tác giả định chuẩn (PHP 8.3, MariaDB Stable LTS 10.11, Port SSH mặc định).</p>
-<pre><code>curl -sO https://wptangtoc.com/share/wptangtoc-ols && bash wptangtoc-ols --auto</code></pre>
-<p><i>Link dự phòng từ GitHub:</i></p>
-<pre>curl -sO https://wptangtoc.github.io/wptangtoc-ols/wptangtoc-ols && bash wptangtoc-ols --auto</pre>
+<p>Tự động thiết lập với cấu hình chuẩn an toàn và tối ưu nhất (PHP 8.3, MariaDB LTS, Port SSH mặc định):</p>
+<pre><code>curl -sO https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols && bash wptangtoc-ols --auto</code></pre>
+
+<h3>Cách 3: Cài đặt trực tiếp từ Git Clone (Khuyên dùng khi dev & kiểm thử)</h3>
+<pre><code>git clone https://github.com/ruanshan4896/wp-tang-toc-ols.git
+cd wp-tang-toc-ols
+bash wptangtoc-ols --auto</code></pre>
+
+<hr>
+
+<h2>🔧 Hướng dẫn đóng gói khi chỉnh sửa mã nguồn</h2>
+<p>Khi bạn chỉnh sửa mã nguồn trong thư mục <code>tool-wptangtoc-ols/</code> hoặc <code>tool-wptangtoc-ols-user/</code>, hãy chạy script sau để tự động đóng gói lại các file zip:</p>
+<pre><code>./build-zip.sh
+git add .
+git commit -m "Cập nhật tính năng mới"
+git push origin main</code></pre>
+
 <hr>
 
 
@@ -94,7 +108,7 @@
 <h2>📚 Nguồn tài liệu & Cộng đồng hỗ trợ</h2>
 <ul>
     <li><b>Trang chủ & Hướng dẫn chi tiết:</b> <a href="https://wptangtoc.com/wptangtoc-ols/">Tại đây</a></li>
-    <li><b>Nhật ký cập nhật (Changelog) Commit:</b> <a href="https://github.com/wptangtoc/wptangtoc-ols/commits/main/">Tại đây</a></li>
+    <li><b>Nhật ký cập nhật (Changelog) Commit:</b> <a href="https://github.com/ruanshan4896/wp-tang-toc-ols/commits/main/">Tại đây</a></li>
     <li><b>Cộng đồng hỗ trợ:</b> Tham gia <a href="https://www.facebook.com/groups/wptangtoc/">Group Tăng Tốc WordPress</a> trên Facebook để được giải đáp thắc mắc.</li>
 </ul>
 

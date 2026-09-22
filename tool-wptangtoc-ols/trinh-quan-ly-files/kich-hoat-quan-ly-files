@@ -170,9 +170,8 @@ cd /usr/local/lsws/"$NAME"/html || exit 1
 fm_zip="quan-ly-files.zip"
 rm -f "${fm_zip:?}" "${fm_zip:?}.sig" #clean truớc khi download
 
-# Định nghĩa 3 trạm tải chiến lược
-URL_1="https://wptangtoc.com/share/quan-ly-files.zip"
-URL_2="https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/main/quan-ly-files.zip"
+URL_1="https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/quan-ly-files.zip"
+URL_2="https://wptangtoc.com/share/quan-ly-files.zip"
 
 echo "" # Tạo một dòng trống cho thanh tiến trình PV chạy mượt
 
@@ -201,27 +200,17 @@ function wptt_download_filemanager_ux() {
   fi
 }
 
-# Vòng lặp tải thông minh (Thử lần lượt từng Link kèm xác thực GPG)
+# Vòng lặp tải thông minh (Thử lần lượt từng Link)
 success_download=0
 for url in "$URL_1" "$URL_2"; do
   if wptt_download_filemanager_ux "$url"; then
-    
-    # --- BƯỚC 1: TẢI CHỮ KÝ GPG ĐỂ ĐỐI CHIẾU ---
-    wget -q --timeout=15 --tries=3 "https://hub.wptangtoc.com/quan-ly-files.zip.sig" -U 'checksum wptangtoc ols' -O "${fm_zip}.sig"
-    
-    # --- BƯỚC 2: XÁC THỰC BẢO MẬT GPG ---
-    if gpg --verify "${fm_zip}.sig" "$fm_zip" >/dev/null 2>&1; then
-      
-      # --- BƯỚC 3: KIỂM TRA TÍNH TOÀN VẸN CỦA FILE NÉN ---
-      if unzip -t "$fm_zip" &>/dev/null; then
-        success_download=1
-        break # Tải, Xác thực và Checksum hoàn hảo -> Thoát vòng lặp!
-      fi
-    else
-      echo -e "\n${C_RED}❌ CẢNH BÁO BẢO MẬT: Chữ ký GPG không hợp lệ hoặc thiếu Public Key! Bỏ qua nguồn tải này.${C_RESET}"
+    # Kiểm tra tính toàn vẹn của file nén
+    if unzip -t "$fm_zip" &>/dev/null; then
+      success_download=1
+      break
     fi
   fi
-  rm -f "${fm_zip:?}" "${fm_zip:?}.sig" # Nếu lỗi, GPG sai hoặc file hỏng, xóa đi để thử link tiếp theo
+  rm -f "${fm_zip:?}" "${fm_zip:?}.sig"
 done
 
 if [[ $success_download -eq 0 ]]; then

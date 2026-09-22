@@ -12,9 +12,9 @@ if [[ $Website_chinh != 'wptangtoc-ols.com' ]]; then #chỉ hoạt động khi d
 fi
 
 version_wptangtoc_ols=$(cat /etc/wptt/tmp/wptangtoc-ols-version-main)
-wptangtocols_version=$(curl --tlsv1.3 -s --connect-timeout 60 --max-time 60 https://wptangtoc.com/share/version-wptangtoc-ols.txt | head -1 | grep '\.')
+wptangtocols_version=$(curl --tlsv1.2 -s --connect-timeout 60 --max-time 60 https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/version-wptangtoc-ols.txt | head -1 | grep '\.')
 if [[ -z "$wptangtocols_version" ]]; then
-  wptangtocols_version=$(curl --tlsv1.2 -s --connect-timeout 60 --max-time 60 https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/version-wptangtoc-ols.txt)
+  wptangtocols_version=$(curl --tlsv1.3 -s --connect-timeout 60 --max-time 60 https://wptangtoc.com/share/version-wptangtoc-ols.txt | head -1 | grep '\.')
 fi
 
 if [[ "$wptangtocols_version" != "$version_wptangtoc_ols" ]]; then
@@ -22,24 +22,12 @@ if [[ "$wptangtocols_version" != "$version_wptangtoc_ols" ]]; then
 
   echo "$wptangtocols_version" > /etc/wptt/tmp/wptangtoc-ols-version #đánh dấu phiên bản mới
 
-  curl --tlsv1.3 -sO https://wptangtoc.com/share/update --connect-timeout 10 --max-time 30
-  curl --tlsv1.3 -sO https://hub.wptangtoc.com/update.sig --connect-timeout 10 --max-time 30 -A "checksum wptangtoc ols"
-
-	# 2. Dự phòng nếu tải thất bại hoặc file trống
-	if [[ ! -s update || ! -s update.sig ]]; then
-		curl --tlsv1.2 -sO https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/update --connect-timeout 10 --max-time 15
-		curl --tlsv1.2 -sO https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/update.sig --connect-timeout 10 --max-time 15
-	fi
-
-	# 3. Quét GPG và chỉ thực thi khi 100% chính chủ
-	if [[ -s update && -s update.sig ]] && gpg --verify update.sig update 2>/dev/null; then
-		if grep -q 'UPDATE_DONE="YES"' update 2>/dev/null; then
-			bash update >/dev/null 2>&1
-		fi
-	else
-		# Tùy chọn: Ghi log ngầm nếu phát hiện file bị can thiệp
-		echo "Lỗi: Script 'update' sai chữ ký GPG hoặc rớt mạng - Bỏ qua thực thi ( $(date '+%d-%m-%Y %H:%M') )" >> /var/log/wptangtoc-ols.log
-	fi
+  curl --tlsv1.2 -sO https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/update --connect-timeout 10 --max-time 15
+  if [[ -s update ]]; then
+    if grep -q 'UPDATE_DONE="YES"' update 2>/dev/null; then
+      bash update >/dev/null 2>&1
+    fi
+  fi
 
 	# 4. Dọn rác
 	rm -f update update.sig

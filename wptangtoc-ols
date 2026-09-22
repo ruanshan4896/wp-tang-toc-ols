@@ -224,166 +224,41 @@ if [[ -n "$HOME_DEV" && -n "$ROOT_DEV" && "$HOME_DEV" != "$ROOT_DEV" ]]; then
 fi
 
 # ==============================================================================
-# XÁC THỰC BẢO MẬT GPG & TÍNH TOÀN VẸN MÃ NGUỒN (GPG + SHA256)
+# TẢI VÀ THỰC THI BỘ CÀI ĐẶT TỪ FORK (ruanshan4896/wp-tang-toc-ols)
 # ==============================================================================
-rm -f "wptangtoc-ols" "wptangtoc-ols-$SERVER_OS"
+REPO_RAW_URL="https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main"
 
-echo "Đang chuẩn bị môi trường bảo mật..."
+# Đảm bảo có sẵn công cụ curl
+if ! command -v curl >/dev/null 2>&1; then
+  if command -v dnf >/dev/null 2>&1; then
+    dnf install -y -q curl >/dev/null 2>&1
+  elif command -v apt-get >/dev/null 2>&1; then
+    apt-get update -q >/dev/null 2>&1 && apt-get install -y -q curl >/dev/null 2>&1
+  fi
+fi
 
-# 1. Đảm bảo có sẵn công cụ curl, gpg, sha256sum
-for tool in curl gpg sha256sum; do
-  if ! command -v "$tool" >/dev/null 2>&1; then
-    pkg="$tool"
-    [[ "$tool" == "gpg" ]] && pkg="gnupg2"
-    [[ "$tool" == "sha256sum" ]] && pkg="coreutils"
-    if command -v dnf >/dev/null 2>&1; then
+# Kiểm tra nếu file cài đặt cho OS đã có sẵn trong thư mục hiện tại (ví dụ khi git clone)
+if [[ -s "wptangtoc-ols-$SERVER_OS" ]]; then
+  echo -e "\e[32m✔ Phát hiện file cài đặt cục bộ wptangtoc-ols-$SERVER_OS. Đang khởi chạy...\e[0m"
+  bash "wptangtoc-ols-$SERVER_OS" "$@"
+  exit 0
+fi
 
-	if [[ $SERVER_OS == 'almalinux' ]]; then #bản almalinx 8.6 ngày xưa trở về truớc phải update gpg online lại mới install đuợc, đề phòng tuơng thích
-	dnf -y clean packages
-	rpm --import https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux
-	fi
+echo "Đang tải bộ cài đặt cho hệ điều hành $SERVER_OS từ GitHub (ruanshan4896/wp-tang-toc-ols)..."
+rm -f "wptangtoc-ols-$SERVER_OS"
 
-      dnf install -y -q "$pkg" >/dev/null 2>&1
-
-    elif command -v apt-get >/dev/null 2>&1; then
-      apt-get update -q >/dev/null 2>&1 && apt-get install -y -q "$pkg" >/dev/null 2>&1
+if curl -sfLO --connect-timeout 30 "${REPO_RAW_URL}/wptangtoc-ols-$SERVER_OS"; then
+  if [[ -s "wptangtoc-ols-$SERVER_OS" ]]; then
+    echo -e "\e[32m✔ Tải thành công! Bắt đầu tiến trình cài đặt...\e[0m"
+    bash "wptangtoc-ols-$SERVER_OS" "$@"
+    # Chỉ dọn dẹp file tải về nếu không nằm trong thư mục git dev
+    if [[ ! -d .git ]]; then
+      rm -f "wptangtoc-ols" "wptangtoc-ols-$SERVER_OS"
     fi
-  fi
-done
-
-# XÓA LINE "Đang chuẩn bị môi trường..."
-echo -en "\033[1A\033[2K\r"
-
-# 2. Nhập và kiểm định Fingerprint Public Key
-EXPECTED_FP="EE091EEB9A5189BC80837C059AA528D37B902267"
-KEY_EMAIL="giatuan@wptangtoc.com"
-
-if ! gpg --list-keys "$KEY_EMAIL" >/dev/null 2>&1; then
-  echo "Đang nạp và đối soát Khóa bảo mật GPG WPTangToc..."
-  
-  # Kèm User-Agent vào CURL lấy Key
-  curl --tlsv1.3 -sfL -A "checksum wptangtoc ols" --connect-timeout 15 "https://wptangtoc.com/share/wptangtoc-gpg-pub.key" -o /tmp/wptangtoc-gpg-pub.key || \
-  curl --tlsv1.2 -sfL -A "checksum wptangtoc ols" --connect-timeout 15 "https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/wptangtoc-gpg-pub.key" -o /tmp/wptangtoc-gpg-pub.key
-
-  if [[ ! -s /tmp/wptangtoc-gpg-pub.key ]]; then
-    echo -e "\e[31mLỖI: Không thể tải Khóa bảo mật GPG từ máy chủ chính và GitHub!\e[0m"
-    exit 1
-  fi
-
-  REAL_FP=$(gpg --show-keys --with-colons /tmp/wptangtoc-gpg-pub.key 2>/dev/null | awk -F: '$1 == "fpr" {print $10}' | head -n 1)
-
-  if [[ -n "$REAL_FP" && "$REAL_FP" == "$EXPECTED_FP" ]]; then
-    gpg --import /tmp/wptangtoc-gpg-pub.key >/dev/null 2>&1
-    rm -f /tmp/wptangtoc-gpg-pub.key
-  else
-    rm -f /tmp/wptangtoc-gpg-pub.key
-    clear
-    echo -e "\n\e[31m╭──────────────────────────────────────────────────────────────────────────────╮\e[0m"
-    echo -e "\e[31m│\e[0m \e[1;33mCẢNH BÁO BẢO MẬT: PHÁT HIỆN PUBLIC KEY BỊ GIẢ MẠO!\e[0m                           \e[31m│\e[0m"
-    echo -e "\e[31m├──────────────────────────────────────────────────────────────────────────────┤\e[0m"
-    echo -e "\e[31m│\e[0m Fingerprint thực tế: $REAL_FP"
-    echo -e "\e[31m│\e[0m Fingerprint chuẩn : $EXPECTED_FP"
-    echo -e "\e[31m│\e[0m Tiến trình cài đặt bị HỦY NGAY LẬP TỨC để bảo vệ máy chủ an toàn!             \e[31m│\e[0m"
-    echo -e "\e[31m╰──────────────────────────────────────────────────────────────────────────────╯\e[0m\n"
-    exit 1
-  fi
-  # XÓA LINE "Đang nạp..."
-  echo -en "\033[1A\033[2K\r"
-fi
-
-# 3. Hàm tải, đối soát GPG Signature và Checksum SHA256
-function download_and_verify() {
-  local url_script="$1"
-  local url_checksum="$2"
-  local url_sig="$3"
-
-	local tmp_checksum
-	local tmp_sig
-	tmp_checksum=$(mktemp -p "/tmp" WPTT_SHA256SUMS_XXXXXX.txt)
-	tmp_sig=$(mktemp -p "/tmp" WPTT_SHA256SUMS_XXXXXX.sig)
-
-
-  if ! curl -sfL -A "checksum wptangtoc ols" --connect-timeout 20 "$url_checksum" -o "$tmp_checksum"; then
-    rm -f "$tmp_checksum" "$tmp_sig"
-    return 1
-  fi
-
-  if ! curl -sfL -A "checksum wptangtoc ols" --connect-timeout 20 "$url_sig" -o "$tmp_sig"; then
-    rm -f "$tmp_checksum" "$tmp_sig"
-    return 1
-  fi
-
-  # Bước A: Xác thực chữ ký số GPG của file Checksum
-  local gpg_verify_output
-  gpg_verify_output=$(gpg --batch --status-fd 1 --verify "$tmp_sig" "$tmp_checksum" 2>/dev/null)
-  
-  if ! echo "$gpg_verify_output" | grep -q '^\[GNUPG:\] GOODSIG ' || \
-     ! echo "$gpg_verify_output" | grep -q "$EXPECTED_FP"; then
-    echo -e "\e[31m[CẢNH BÁO] Chữ ký số GPG của file checksum không hợp lệ hoặc bị can thiệp!\e[0m"
-    rm -f "$tmp_checksum" "$tmp_sig"
-    return 1
-  fi
-
-  # Bước B: Tải script cài đặt cho OS tương ứng (Kèm User-Agent)
-  if ! curl -sfLO -A "checksum wptangtoc ols" --connect-timeout 30 "$url_script"; then
-    rm -f "$tmp_checksum" "$tmp_sig" "wptangtoc-ols-$SERVER_OS"
-    return 1
-  fi
-
-  # Bước C: Kiểm tra mã băm SHA256 từ file checksum
-  local expected_hash actual_hash
-  expected_hash=$(grep -E "[[:space:]]wptangtoc-ols-$SERVER_OS$" "$tmp_checksum" | tr -d '\r' | awk '{print $1}')
-  actual_hash=$(sha256sum "wptangtoc-ols-$SERVER_OS" 2>/dev/null | awk '{print $1}')
-
-  rm -f "$tmp_checksum" "$tmp_sig"
-
-  if [[ -n "$expected_hash" && "$expected_hash" == "$actual_hash" ]]; then
-    return 0
-  else
-    rm -f "wptangtoc-ols-$SERVER_OS"
-    return 1
-  fi
-}
-
-echo "Đang tải và kiểm chứng mã nguồn (GPG & SHA256)..."
-DOWNLOAD_SUCCESS=0
-
-# Nguồn 1: Máy chủ chính (wptangtoc.com & hub)
-if download_and_verify \
-  "https://wptangtoc.com/share/wptangtoc-ols-$SERVER_OS" \
-  "https://hub.wptangtoc.com/SHA256SUMS.txt" \
-  "https://hub.wptangtoc.com/SHA256SUMS.txt.sig"; then
-  DOWNLOAD_SUCCESS=1
-  echo -en "\033[1A\033[2K\r"
-else
-  # Xóa dòng đang tải, hiện dòng chuyển đổi nguồn Github
-  echo -en "\033[1A\033[2K\r"
-  echo -e "\e[33mNguồn chính gián đoạn. Tự động chuyển vùng sang GitHub Releases...\e[0m"
-  if download_and_verify \
-    "https://github.com/wptangtoc/wptangtoc-ols/releases/latest/download/wptangtoc-ols-$SERVER_OS" \
-    "https://github.com/wptangtoc/wptangtoc-ols/releases/latest/download/SHA256SUMS.txt" \
-    "https://github.com/wptangtoc/wptangtoc-ols/releases/latest/download/SHA256SUMS.txt.sig"; then
-    DOWNLOAD_SUCCESS=1
-    echo -en "\033[1A\033[2K\r"
+    exit 0
   fi
 fi
 
-# CHỐT CHẶN BẢO MẬT CUỐI CÙNG
-if [[ $DOWNLOAD_SUCCESS -eq 0 ]]; then
-  echo ""
-  echo -e "\e[31m╭──────────────────────────────────────────────────────────────────────────────╮\e[0m"
-  echo -e "\e[31m│\e[0m \e[1;31mLỖI BẢO MẬT: KHÔNG THỂ XÁC MINH TÍNH TOÀN VẸN CỦA BẢN CÀI ĐẶT!\e[0m               \e[31m│\e[0m"
-  echo -e "\e[31m├──────────────────────────────────────────────────────────────────────────────┤\e[0m"
-  echo -e "\e[31m│\e[0m Hệ thống không thể xác thực Chữ ký số GPG hoặc mã băm SHA256 từ các nguồn.   \e[31m│\e[0m"
-  echo -e "\e[31m│\e[0m Tiến trình tự động HỦY để bảo vệ VPS của bạn khỏi các cuộc tấn công MITM.    \e[31m│\e[0m"
-  echo -e "\e[31m│\e[0m Vui lòng kiểm tra lại kết nối mạng hoặc liên hệ tác giả: Gia Tuấn.            \e[31m│\e[0m"
-  echo -e "\e[31m╰──────────────────────────────────────────────────────────────────────────────╯\e[0m\n"
-  exit 1
-fi
-
-echo -e "\e[32m✔ Xác minh Chữ ký số GPG & SHA256 hoàn tất: Bản cài đặt chính chủ 100%!\e[0m"
-sleep 1
-echo -en "\033[1A\033[2K\r"
-
-# THỰC THI GÓI CÀI ĐẶT
-bash "wptangtoc-ols-$SERVER_OS" "$@"
+echo -e "\e[31m❌ LỖI: Không thể tải được file wptangtoc-ols-$SERVER_OS từ repository!\e[0m"
+echo "Vui lòng kiểm tra lại kết nối mạng hoặc truy cập: https://github.com/ruanshan4896/wp-tang-toc-ols"
+exit 1

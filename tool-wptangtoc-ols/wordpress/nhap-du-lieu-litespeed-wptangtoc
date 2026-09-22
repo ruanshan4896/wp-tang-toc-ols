@@ -212,7 +212,7 @@ if [[ -d "$pathcheckplugin" ]]; then
   cd "$path" && wget -q --timeout=15 --tries=3 https://wptangtoc.com/share/$data_wptangtoc
 
   if [[ ! -f $path/$data_wptangtoc ]]; then
-	  URL_GITHUB_DATA_Litespeed_cache_plugin="https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/main/$data_wptangtoc"
+	  URL_GITHUB_DATA_Litespeed_cache_plugin="https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/$data_wptangtoc"
 	  cd "$path" && wget -q --timeout=15 --tries=3 "$URL_GITHUB_DATA_Litespeed_cache_plugin"
   fi
 

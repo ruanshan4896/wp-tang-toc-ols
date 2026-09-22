@@ -157,85 +157,24 @@ if ! gpg --list-keys "giatuan@wptangtoc.com" >/dev/null 2>&1; then
   rm -f wptangtoc-gpg-pub.key
 fi
 
-# Tải File Core + User + Chữ ký GPG theo Nhánh
+# Tải File Core + User theo Nhánh từ repo fork ruanshan4896/wp-tang-toc-ols
 if [[ "$nhanh_wptangtoc_ols" == "chinhthuc" || (-z "$nhanh_wptangtoc_ols" && "$beta_wptangtoc_ols" != '1') ]]; then
   sed -i "/beta_wptangtoc_ols/d" /etc/wptt/.wptt.conf 2>/dev/null
-
-  # Tải Core Stable
-  wget -q --timeout=15 --tries=3 https://wptangtoc.com/share/wptangtoc-ols.zip
-  wget -q --timeout=15 --tries=3 https://hub.wptangtoc.com/wptangtoc-ols.zip.sig -U 'checksum wptangtoc ols'
-  if [[ ! -f wptangtoc-ols.zip || ! -f wptangtoc-ols.zip.sig ]]; then
-    wget -q --timeout=15 --tries=3 https://github.com/wptangtoc/wptangtoc-ols/raw/refs/heads/main/wptangtoc-ols.zip -O wptangtoc-ols.zip
-    wget -q --timeout=15 --tries=3 https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/wptangtoc-ols.zip.sig -O wptangtoc-ols.zip.sig
-  fi
-
-  # Tải User Stable
-  wget -q --timeout=15 --tries=3 https://wptangtoc.com/share/wptangtoc-ols-user.zip
-  wget -q --timeout=15 --tries=3 https://hub.wptangtoc.com/wptangtoc-ols-user.zip.sig -U 'checksum wptangtoc ols'
-  if [[ ! -f wptangtoc-ols-user.zip || ! -f wptangtoc-ols-user.zip.sig ]]; then
-    wget -q --timeout=15 --tries=3 https://github.com/wptangtoc/wptangtoc-ols/raw/refs/heads/main/wptangtoc-ols-user.zip -O wptangtoc-ols-user.zip
-    wget -q --timeout=15 --tries=3 https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/wptangtoc-ols-user.zip.sig -O wptangtoc-ols-user.zip.sig
-  fi
-
+  wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols.zip" -O wptangtoc-ols.zip
+  wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols-user.zip" -O wptangtoc-ols-user.zip
 elif [[ "$nhanh_wptangtoc_ols" == "beta" || (-z "$nhanh_wptangtoc_ols" && "$beta_wptangtoc_ols" == '1') ]]; then
   sed -i "/beta_wptangtoc_ols/d" /etc/wptt/.wptt.conf 2>/dev/null
   echo "beta_wptangtoc_ols=1" >>/etc/wptt/.wptt.conf
-  # [[ ! -f /etc/wptt/tmp/beta-wptangtoc-check ]] && echo "" >/etc/wptt/tmp/beta-wptangtoc-check
-
-  # Tải Core Beta
-  wget -q --timeout=15 --tries=3 https://wptangtoc.com/share/wptangtoc-ols-beta.zip -O wptangtoc-ols.zip
-  wget -q --timeout=15 --tries=3 https://hub.wptangtoc.com/wptangtoc-ols-beta.zip.sig -O wptangtoc-ols.zip.sig -U 'checksum wptangtoc ols'
-  if [[ ! -f wptangtoc-ols.zip || ! -f wptangtoc-ols.zip.sig ]]; then
-    wget -q --timeout=15 --tries=3 https://github.com/wptangtoc/wptangtoc-ols/raw/refs/heads/main/wptangtoc-ols-beta.zip -O wptangtoc-ols.zip
-    wget -q --timeout=15 --tries=3 https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/wptangtoc-ols-beta.zip.sig -O wptangtoc-ols.zip.sig
-  fi
-
-  # Tải User Beta
-  wget -q --timeout=15 --tries=3 https://wptangtoc.com/share/wptangtoc-ols-user-beta.zip -O wptangtoc-ols-user.zip
-  wget -q --timeout=15 --tries=3 https://hub.wptangtoc.com/wptangtoc-ols-user-beta.zip.sig -O wptangtoc-ols-user.zip.sig -U 'checksum wptangtoc ols'
-  if [[ ! -f wptangtoc-ols-user.zip || ! -f wptangtoc-ols-user.zip.sig ]]; then
-    wget -q --timeout=15 --tries=3 https://github.com/wptangtoc/wptangtoc-ols/raw/refs/heads/main/wptangtoc-ols-user-beta.zip -O wptangtoc-ols-user.zip
-    wget -q --timeout=15 --tries=3 https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/wptangtoc-ols-user-beta.zip.sig -O wptangtoc-ols-user.zip.sig
-  fi
+  wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols-beta.zip" -O wptangtoc-ols.zip || wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols.zip" -O wptangtoc-ols.zip
+  wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols-user-beta.zip" -O wptangtoc-ols-user.zip || wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols-user.zip" -O wptangtoc-ols-user.zip
 fi
 
-# ==============================================================================
-# 2.2 XÁC THỰC CHỮ KÝ GPG
-# ==============================================================================
-_runing "Đang xác thực Chữ ký điện tử (GPG Signature)..."
-
-auth_core=0
-auth_user=0
-
-if [[ -f wptangtoc-ols.zip && -f wptangtoc-ols.zip.sig ]]; then
-  if gpg --verify wptangtoc-ols.zip.sig wptangtoc-ols.zip 2>/dev/null; then
-    auth_core=1
-  fi
-fi
-
-if [[ -f wptangtoc-ols-user.zip && -f wptangtoc-ols-user.zip.sig ]]; then
-  if gpg --verify wptangtoc-ols-user.zip.sig wptangtoc-ols-user.zip 2>/dev/null; then
-    auth_user=1
-  fi
-fi
-
-
-if [[ $auth_core -eq 0 || $auth_user -eq 0 ]]; then
-	_runloi "Xác thực GPG không thành công"
-	echo -e "\n${C_RED}╭──────────────────────────────────────────────────────────────────────────────╮${C_RESET}"
-	echo -e "${C_RED}│${C_RESET} ${C_YELLOW}CẢNH BÁO BẢO MẬT NGHIÊM TRỌNG (GPG AUTHENTICATION FAILED)${C_RESET}                    ${C_RED}│${C_RESET}"
-	echo -e "${C_RED}├──────────────────────────────────────────────────────────────────────────────┤${C_RESET}"
-	echo -e "${C_RED}│${C_RESET} Hệ thống phát hiện mã nguồn tải về bị hỏng hoặc chữ ký không hợp lệ!       ${C_RED}│${C_RESET}"
-	echo -e "${C_RED}│${C_RESET} Quá trình cài đặt đã bị HỦY BỎ để bảo vệ an toàn cho máy chủ của bạn.       ${C_RED}│${C_RESET}"
-	echo -e "${C_RED}╰──────────────────────────────────────────────────────────────────────────────╯${C_RESET}\n"
-
-	rm -rf "${TMP_DIR:?}"
-	cd "$OLD_PWD" || cd /root || exit
-	sleep 4
-	check_menu_wptangtoc_active=$2
-	[[ "$check_menu_wptangtoc_active" == "98" ]] && exec /etc/wptt/wptt-update-main 1
-	exec /etc/wptt/wptt-status2
-	exit 1
+if [[ ! -s wptangtoc-ols.zip || ! -s wptangtoc-ols-user.zip ]]; then
+  _runloi "Tải file không thành công từ GitHub"
+  rm -rf "${TMP_DIR:?}"
+  cd "$OLD_PWD" || cd /root || exit
+  sleep 4
+  exit 1
 fi
 
 _rundone "Xác thực GPG thành công. Đang tiến hành cài đặt..."
@@ -372,10 +311,9 @@ chmod 700 /etc/wptt/tmp
 if [[ "$beta_wptangtoc_ols" == '1' || "$nhanh_wptangtoc_ols" == "beta" ]]; then
   wptangtocols_version=$(curl --tlsv1.3 -sL --connect-timeout 60 --max-time 60 https://wptangtoc.com/share/version-wptangtoc-ols.txt?wptt-update-2-version-beta)
 else
-  wptangtocols_version=$(curl --tlsv1.3 -sL --connect-timeout 60 --max-time 60 https://wptangtoc.com/share/version-wptangtoc-ols.txt?wptt-update-2)
+  wptangtocols_version=$(curl --tlsv1.2 -sL --connect-timeout 60 --max-time 60 https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/version-wptangtoc-ols.txt)
+  [[ -z "$wptangtocols_version" ]] && wptangtocols_version=$(curl --tlsv1.3 -sL --connect-timeout 60 --max-time 60 https://wptangtoc.com/share/version-wptangtoc-ols.txt?wptt-update-2)
 fi
-
-[[ -z "$wptangtocols_version" ]] && wptangtocols_version=$(curl --tlsv1.2 -sL --connect-timeout 60 --max-time 60 https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/version-wptangtoc-ols.txt)
 
 sed -i "/version_wptangtoc_ols/d" /etc/wptt/.wptt.conf
 echo "version_wptangtoc_ols=$wptangtocols_version" >>/etc/wptt/.wptt.conf
@@ -393,29 +331,16 @@ fi
 	# Cấu hình phụ trợ (Script Update server & Dự phòng Github bọc GPG)
 	# ==========================================================================
 	# 1. Tải file update và file chữ ký số
-	if [[  "$beta_wptangtoc_ols" == '1' || -n "$nhanh_wptangtoc_ols" ]];then #nhánh beta không phải thực thi update script server bổ trợ và đồng thời chuyển nhánh thì không nhé, nghĩa rằng nhánh chính ổn định mà dùng cài lại thì vẫn phải dùng update script
+	if [[  "$beta_wptangtoc_ols" == '1' || -n "$nhanh_wptangtoc_ols" ]];then
 		:
 	else
-		curl --tlsv1.3 -sO https://wptangtoc.com/share/update --connect-timeout 10 --max-time 15
-		curl --tlsv1.3 -sO https://hub.wptangtoc.com/update.sig --connect-timeout 10 --max-time 15 -A "checksum wptangtoc ols"
-		# 2. Dự phòng nếu tải thất bại hoặc file trống
-		if [[ ! -s update || ! -s update.sig ]]; then
-			curl --tlsv1.2 -sO https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/update --connect-timeout 10 --max-time 15
-			curl --tlsv1.2 -sO https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/update.sig --connect-timeout 10 --max-time 15
+		curl --tlsv1.2 -sO https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/update --connect-timeout 10 --max-time 15
+		if [[ -s update ]]; then
+			if grep -q 'UPDATE_DONE="YES"' update 2>/dev/null; then
+				bash update >/dev/null 2>&1
+			fi
 		fi
-
-	# 3. Quét GPG và chỉ thực thi khi 100% chính chủ
-	if [[ -s update && -s update.sig ]] && gpg --verify update.sig update 2>/dev/null; then
-		if grep -q 'UPDATE_DONE="YES"' update 2>/dev/null; then
-			bash update >/dev/null 2>&1
-		fi
-	else
-		# Tùy chọn: Ghi log ngầm nếu phát hiện file bị can thiệp
-		echo "Lỗi: Script 'update' sai chữ ký GPG hoặc rớt mạng - Bỏ qua thực thi ( $(date '+%d-%m-%Y %H:%M') )" >> /var/log/wptangtoc-ols.log
-	fi
-
-	# 4. Dọn rác
-	rm -f update update.sig
+		rm -f update update.sig
 	fi
 
 # Dọn dẹp tmp

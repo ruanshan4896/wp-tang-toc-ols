@@ -20,8 +20,8 @@ fi
 
 . /etc/wptt/.wptt.conf
 
-wptangtocols_version=$(curl --tlsv1.3 -sL --connect-timeout 60 --max-time 60 "https://wptangtoc.com/share/version-wptangtoc-ols.txt?domain-update-tu-dong=$Website_chinh")
-[[ -z "$wptangtocols_version" ]] && wptangtocols_version=$(curl --tlsv1.2 -sL --connect-timeout 60 --max-time 60 "https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/version-wptangtoc-ols.txt")
+wptangtocols_version=$(curl --tlsv1.2 -sL --connect-timeout 60 --max-time 60 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/version-wptangtoc-ols.txt")
+[[ -z "$wptangtocols_version" ]] && wptangtocols_version=$(curl --tlsv1.3 -sL --connect-timeout 60 --max-time 60 "https://wptangtoc.com/share/version-wptangtoc-ols.txt?domain-update-tu-dong=$Website_chinh")
 
 if [[ -n "$wptangtocols_version" && "$wptangtocols_version" != "$version_wptangtoc_ols" ]]; then
 
@@ -29,46 +29,10 @@ if [[ -n "$wptangtocols_version" && "$wptangtocols_version" != "$version_wptangt
   TMP_DIR=$(mktemp -d /etc/wptt/tmp/XXXXXX)
   cd "$TMP_DIR" || exit
 
-  # Nạp Public Key (Nếu chưa có)
-  if ! gpg --list-keys "giatuan@wptangtoc.com" >/dev/null 2>&1; then
-	  # Tải key về thư mục tạm
-	  curl --tlsv1.3 -sL --connect-timeout 10 "https://wptangtoc.com/share/wptangtoc-gpg-pub.key" -o wptangtoc-gpg-pub.key
-
-  # Dự phòng Github
-  if [[ ! -s wptangtoc-gpg-pub.key ]]; then
-	  curl --tlsv1.2 -sL --connect-timeout 10 "https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/wptangtoc-gpg-pub.key" -o wptangtoc-gpg-pub.key
-  fi
-
-  # Đọc Fingerprint thực tế (Chỉ lấy dòng đầu của Master Key)
-  real_fp=$(gpg --show-keys --with-colons wptangtoc-gpg-pub.key 2>/dev/null | awk -F: '$1 == "fpr" {print $10}' | head -n 1)
-
-  # Fingerprint "chuẩn" của tác giả
-  expected_fp="EE091EEB9A5189BC80837C059AA528D37B902267"
-
-  # Kiểm định khắt khe
-  if [[ -n "$real_fp" && "$real_fp" == "$expected_fp" ]]; then
-	  gpg --import wptangtoc-gpg-pub.key >/dev/null 2>&1
-  else
-	  # Bị tráo Key! Âm thầm dọn dẹp và thoát để không tạo rác log
-	  cd /root || exit
-	  rm -rf "${TMP_DIR:?}"
-	  exit
-  fi
-  fi
-
-
-  # Tải File Core (.zip) và File Chữ Ký (.sig)
-  wget -q --timeout=15 --tries=3 "https://wptangtoc.com/share/wptangtoc-ols.zip" -O wptangtoc-ols.zip
-  wget -q --timeout=15 --tries=3 "https://hub.wptangtoc.com/wptangtoc-ols.zip.sig" -O wptangtoc-ols.zip.sig
+  # Tải File Core (.zip) từ fork
+  wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols.zip" -O wptangtoc-ols.zip
   
-  # Dự phòng Github nếu máy chủ gốc sập
-  if [[ ! -s wptangtoc-ols.zip || ! -s wptangtoc-ols.zip.sig ]]; then
-      wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/wptangtoc-ols.zip" -O wptangtoc-ols.zip
-      wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/wptangtoc-ols.zip.sig" -O wptangtoc-ols.zip.sig
-  fi
-
-  # Quét xác thực GPG - Thoát âm thầm nếu phát hiện giả mạo hoặc lỗi file
-  if ! gpg --verify wptangtoc-ols.zip.sig wptangtoc-ols.zip 2>/dev/null; then
+  if [[ ! -s wptangtoc-ols.zip ]]; then
     cd "$OLD_PWD" || cd /root || exit
     rm -rf "${TMP_DIR:?}"
     exit
@@ -189,22 +153,13 @@ if [[ -n "$wptangtocols_version" && "$wptangtocols_version" != "$version_wptangt
 	  # ==========================================================================
 	  # Cấu hình phụ trợ (Script Update server & Dự phòng Github bọc GPG)
 	  # ==========================================================================
-	  # 1. Tải file update và file chữ ký số
-	  curl --tlsv1.3 -sO https://wptangtoc.com/share/update --connect-timeout 10 --max-time 15
-	  curl --tlsv1.3 -sO https://hub.wptangtoc.com/update.sig --connect-timeout 10 --max-time 15 -A "checksum wptangtoc ols"
-
-	# 2. Dự phòng nếu tải thất bại hoặc file trống
-	if [[ ! -s update || ! -s update.sig ]]; then
-		curl --tlsv1.2 -sO https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/update --connect-timeout 10 --max-time 15
-		curl --tlsv1.2 -sO https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/update.sig --connect-timeout 10 --max-time 15
-	fi
-
-	# 3. Quét GPG và chỉ thực thi khi 100% chính chủ
-	if [[ -s update && -s update.sig ]] && gpg --verify update.sig update 2>/dev/null; then
-		if grep -q 'UPDATE_DONE="YES"' update 2>/dev/null; then
-			bash update >/dev/null 2>&1
-		fi
-	fi
+	  # 1. Tải file update từ repo fork
+	  curl --tlsv1.2 -sO https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/update --connect-timeout 10 --max-time 15
+	  if [[ -s update ]]; then
+		  if grep -q 'UPDATE_DONE="YES"' update 2>/dev/null; then
+			  bash update >/dev/null 2>&1
+		  fi
+	  fi
 
 	# 4. Dọn rác
 	rm -f update update.sig
