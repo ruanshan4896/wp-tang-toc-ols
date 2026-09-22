@@ -184,6 +184,8 @@ done
 
 . /etc/wptt/php/php-cli-domain-config "$NAME"
 
+WP_EXEC=( /sbin/runuser -u "$User_name_vhost" -- /usr/local/lsws/lsphp"${phien_ban_php_domain_thuc_thi}"/bin/php /usr/local/bin/wp )
+
 pathcheckplugin="/usr/local/lsws/$NAME/html/wp-content/plugins/litespeed-cache"
 if [[ ! -d "$pathcheckplugin" ]]; then
   _runing "Cài đặt plugin LiteSpeed Cache"
