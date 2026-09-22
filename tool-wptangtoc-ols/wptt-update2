@@ -5,20 +5,12 @@
 # @since: 2026
 
 function huong_dan() {
-  Tính năng Chuyển nhánh Beta hoặc Nhánh Chính thức trong WPTangToc OLS cho phép người dùng lựa chọn giữa việc sử dụng phiên bản ổn định [nhánh chính thức] hoặc phiên bản thử nghiệm mới nhất [nhánh beta] của bộ script wptangtoc ols.
+  Tính năng Cài lại WPTangToc OLS cho phép bạn tải và giải nén cài đặt đè mã nguồn mới nhất từ GitHub.
 
   Giải thích ngắn gọn:
-  Nhánh Chính thức [Stable/Main Branch]:
-  * Đây là phiên bản đã được kiểm thử kỹ lưỡng, được coi là ổn định và đáng tin cậy nhất.
-  * Khuyến nghị cho hầu hết người dùng, đặc biệt là cho các website quan trọng đang hoạt động [production environment].
-  * Tập trung vào sự ổn định và các tính năng đã được chứng minh.
-
-  Nhánh Beta [Beta Branch]:
-  * Đây là phiên bản đang trong quá trình phát triển, chứa các tính năng mới nhất, các cải tiến hoặc bản vá lỗi thử nghiệm.
-  * Người dùng có thể trải nghiệm sớm các cập nhật nhưng cũng có khả năng gặp lỗi hoặc hoạt động chưa ổn định.
-  * Phù hợp cho người dùng có kinh nghiệm muốn thử nghiệm, đóng góp ý kiến và giúp tác giả phát hiện lỗi trước khi các thay đổi được đưa vào nhánh chính thức.
-
-  Tóm lại, tính năng chuyển đổi nhánh trong WPTangToc OLS mang lại sự linh hoạt cho người dùng, cho phép họ lựa chọn giữa sự ổn định của phiên bản chính thức và sự mới mẻ của phiên bản beta, tùy theo nhu cầu và mức độ chấp nhận rủi ro.
+  * Khi bạn vừa cập nhật mã nguồn trên GitHub [hoặc nghi ngờ file hệ thống bị lỗi] nhưng không tăng số phiên bản.
+  * Tính năng này sẽ tải toàn bộ mã nguồn Core và User mới nhất từ GitHub ruanshan4896/wp-tang-toc-ols về và cài đè lên hệ thống.
+  * Tự động sao lưu phiên bản cũ trước khi cài đè để phòng trường hợp cần Rollback.
 }
 
 
@@ -79,27 +71,10 @@ center_text() {
 }
 
 clear
-if [[ "$nhanh_wptangtoc_ols" == "chinhthuc" ]]; then
-  target_branch="ỔN ĐỊNH (Stable/Main)"
-  call_log="(chuyển đổi phiên bản ổn định)"
-elif [[ "$nhanh_wptangtoc_ols" == "beta" ]]; then
-  target_branch="THỬ NGHIỆM (Beta)"
-  call_log="(chuyển đổi phiên bản beta)"
-else
-  # Cài lại nhánh hiện tại (Reinstall)
-  if [[ "$beta_wptangtoc_ols" == '1' ]]; then
-    target_branch="THỬ NGHIỆM (Beta) - Cài đặt lại"
-    call_log="(Cài đặt lại phiên bản beta)"
-  else
-    target_branch="ỔN ĐỊNH (Stable/Main) - Cài đặt lại"
-    call_log="(Cài đặt lại phiên bản ổn định)"
-  fi
-fi
-
 echo -e "${C_CYAN}╭──────────────────────────────────────────────────────────────────────────────╮${C_RESET}"
-center_text "${C_YELLOW}HỆ THỐNG ➜ CÀI ĐẶT LẠI / CHUYỂN NHÁNH WPTANGTOC OLS${C_RESET}"
+center_text "${C_YELLOW}HỆ THỐNG ➜ CÀI LẠI WPTANGTOC OLS${C_RESET}"
 echo -e "${C_CYAN}├──────────────────────────────────────────────────────────────────────────────┤${C_RESET}"
-print_line "${C_BOLD_WHITE}Tiến hành cài đặt nhánh:${C_RESET} ${C_YELLOW}$target_branch${C_RESET}"
+print_line "${C_BOLD_WHITE}Tiến hành tải lại mã nguồn mới nhất từ GitHub${C_RESET}"
 echo -e "${C_CYAN}╰──────────────────────────────────────────────────────────────────────────────╯${C_RESET}\n"
 
 # ==============================================================================
@@ -119,17 +94,10 @@ TMP_DIR=$(mktemp -d /etc/wptt/tmp/XXXXXX)
 cd "$TMP_DIR" || exit
 
 
-# Tải File Core + User theo Nhánh từ repo fork ruanshan4896/wp-tang-toc-ols
-if [[ "$nhanh_wptangtoc_ols" == "chinhthuc" || (-z "$nhanh_wptangtoc_ols" && "$beta_wptangtoc_ols" != '1') ]]; then
-  sed -i "/beta_wptangtoc_ols/d" /etc/wptt/.wptt.conf 2>/dev/null
-  wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols.zip" -O wptangtoc-ols.zip
-  wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols-user.zip" -O wptangtoc-ols-user.zip
-elif [[ "$nhanh_wptangtoc_ols" == "beta" || (-z "$nhanh_wptangtoc_ols" && "$beta_wptangtoc_ols" == '1') ]]; then
-  sed -i "/beta_wptangtoc_ols/d" /etc/wptt/.wptt.conf 2>/dev/null
-  echo "beta_wptangtoc_ols=1" >>/etc/wptt/.wptt.conf
-  wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols-beta.zip" -O wptangtoc-ols.zip || wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols.zip" -O wptangtoc-ols.zip
-  wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols-user-beta.zip" -O wptangtoc-ols-user.zip || wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols-user.zip" -O wptangtoc-ols-user.zip
-fi
+# Tải File Core + User từ repo fork ruanshan4896/wp-tang-toc-ols
+sed -i "/beta_wptangtoc_ols/d" /etc/wptt/.wptt.conf 2>/dev/null
+wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols.zip" -O wptangtoc-ols.zip
+wget -q --timeout=15 --tries=3 "https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/wptangtoc-ols-user.zip" -O wptangtoc-ols-user.zip
 
 if [[ ! -s wptangtoc-ols.zip || ! -s wptangtoc-ols-user.zip ]]; then
   _runloi "Tải file không thành công từ GitHub"
@@ -139,7 +107,7 @@ if [[ ! -s wptangtoc-ols.zip || ! -s wptangtoc-ols-user.zip ]]; then
   exit 1
 fi
 
-_rundone "Xác thực GPG thành công. Đang tiến hành cài đặt..."
+_rundone "Đang tiến hành cài đặt..."
 
 # ==============================================================================
 # 2.3 BACKUP ĐỂ ROLLBACK
@@ -270,12 +238,8 @@ chmod 700 /etc/wptt/tmp
 # ==============================================================================
 # 3. THIẾT LẬP VERSION VÀ CLEANUP
 # ==============================================================================
-if [[ "$beta_wptangtoc_ols" == '1' || "$nhanh_wptangtoc_ols" == "beta" ]]; then
-  wptangtocols_version=$(curl --tlsv1.3 -sL --connect-timeout 60 --max-time 60 https://wptangtoc.com/share/version-wptangtoc-ols.txt?wptt-update-2-version-beta)
-else
-  wptangtocols_version=$(curl --tlsv1.2 -sL --connect-timeout 60 --max-time 60 https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/version-wptangtoc-ols.txt)
-  [[ -z "$wptangtocols_version" ]] && wptangtocols_version=$(curl --tlsv1.3 -sL --connect-timeout 60 --max-time 60 https://wptangtoc.com/share/version-wptangtoc-ols.txt?wptt-update-2)
-fi
+wptangtocols_version=$(curl --tlsv1.2 -sL --connect-timeout 60 --max-time 60 https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/version-wptangtoc-ols.txt)
+[[ -z "$wptangtocols_version" ]] && wptangtocols_version=$(curl --tlsv1.3 -sL --connect-timeout 60 --max-time 60 https://wptangtoc.com/share/version-wptangtoc-ols.txt?wptt-update-2)
 
 sed -i "/version_wptangtoc_ols/d" /etc/wptt/.wptt.conf
 echo "version_wptangtoc_ols=$wptangtocols_version" >>/etc/wptt/.wptt.conf
@@ -293,17 +257,13 @@ fi
 	# Cấu hình phụ trợ (Script Update server & Dự phòng Github bọc GPG)
 	# ==========================================================================
 	# 1. Tải file update và file chữ ký số
-	if [[  "$beta_wptangtoc_ols" == '1' || -n "$nhanh_wptangtoc_ols" ]];then
-		:
-	else
-		curl --tlsv1.2 -sO https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/update --connect-timeout 10 --max-time 15
-		if [[ -s update ]]; then
-			if grep -q 'UPDATE_DONE="YES"' update 2>/dev/null; then
-				bash update >/dev/null 2>&1
-			fi
+	curl --tlsv1.2 -sO https://raw.githubusercontent.com/ruanshan4896/wp-tang-toc-ols/main/update --connect-timeout 10 --max-time 15
+	if [[ -s update ]]; then
+		if grep -q 'UPDATE_DONE="YES"' update 2>/dev/null; then
+			bash update >/dev/null 2>&1
 		fi
-		rm -f update update.sig
 	fi
+	rm -f update update.sig
 
 # Dọn dẹp tmp
 cd "$OLD_PWD" || cd /root || exit
