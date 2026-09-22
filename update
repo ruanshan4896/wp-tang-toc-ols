@@ -103,31 +103,6 @@ echo "cd /wptangtoc-ols" >>/root/.bashrc
 
 
 
-#pub key gpg
-if ! gpg --list-keys "giatuan@wptangtoc.com" >/dev/null 2>&1; then
-  
-  # 1. Tải file key về máy
-  curl --tlsv1.3 -sL --connect-timeout 10 "https://wptangtoc.com/share/wptangtoc-gpg-pub.key" -o wptangtoc-gpg-pub.key
-  
-  # Dự phòng Github nếu web chính sập
-  if [[ ! -s wptangtoc-gpg-pub.key ]]; then
-    curl --tlsv1.2 -sL --connect-timeout 10 "https://raw.githubusercontent.com/wptangtoc/wptangtoc-ols/refs/heads/main/wptangtoc-gpg-pub.key" -o wptangtoc-gpg-pub.key
-  fi
-
-  # 2. Đọc Fingerprint thực tế (Chỉ lấy dòng đầu của Master Key)
-  real_fp=$(gpg --show-keys --with-colons wptangtoc-gpg-pub.key 2>/dev/null | awk -F: '$1 == "fpr" {print $10}' | head -n 1)
-  
-  # 3. Fingerprint "chuẩn không cần chỉnh" của sếp
-  expected_fp="EE091EEB9A5189BC80837C059AA528D37B902267"
-
-  # 4. Kiểm định khắt khe trước khi nạp
-  if [[ -n "$real_fp" && "$real_fp" == "$expected_fp" ]]; then
-    gpg --import wptangtoc-gpg-pub.key >/dev/null 2>&1
-  fi
-  
-  # Dọn dẹp file key rác
-  rm -f wptangtoc-gpg-pub.key
-fi
 
 
 WPTT_AES_DIR="/etc/wptt-aes"
